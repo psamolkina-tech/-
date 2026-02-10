@@ -1,0 +1,1756 @@
+<!--
+  ============================================================
+  TILDA VIDEO TRACKING PAGE — Полный код для вставки в HTML-блок Tilda
+  ============================================================
+  Инструкция:
+  1. В редакторе Tilda добавьте блок "T123 — HTML-код" (или Zero Block → Embed HTML)
+  2. Скопируйте ВЕСЬ код ниже и вставьте в поле HTML
+  3. Замените VIDEO_URL на ссылку на ваше видео (YouTube или прямой URL)
+  4. Замените данные эксперта (имя, фото, описание)
+  5. Замените CHANNEL_URL на ссылку вашего Telegram канала
+  ============================================================
+-->
+
+<style>
+/* ===== TILDA SCOPED RESET ===== */
+.vt-page * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.vt-page {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 40%, #0f0f2d 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ===== ANIMATED BACKGROUND ===== */
+.vt-bg-orbs {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.vt-bg-orbs .vt-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  animation: vt-float 8s ease-in-out infinite;
+}
+
+.vt-bg-orbs .vt-orb:nth-child(1) {
+  width: 400px; height: 400px;
+  background: #6c5ce7;
+  top: -100px; left: -100px;
+  animation-delay: 0s;
+}
+
+.vt-bg-orbs .vt-orb:nth-child(2) {
+  width: 350px; height: 350px;
+  background: #e84393;
+  top: 40%; right: -80px;
+  animation-delay: -3s;
+}
+
+.vt-bg-orbs .vt-orb:nth-child(3) {
+  width: 300px; height: 300px;
+  background: #00b894;
+  bottom: -50px; left: 30%;
+  animation-delay: -5s;
+}
+
+@keyframes vt-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -30px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+/* ===== CONTAINER ===== */
+.vt-container {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ===== HERO SECTION ===== */
+.vt-hero {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+
+.vt-hero-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, rgba(108,92,231,0.3), rgba(232,67,147,0.3));
+  border: 1px solid rgba(108,92,231,0.5);
+  padding: 8px 20px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #a29bfe;
+  margin-bottom: 24px;
+  animation: vt-glow 3s ease-in-out infinite;
+}
+
+@keyframes vt-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(108,92,231,0.2); }
+  50% { box-shadow: 0 0 40px rgba(108,92,231,0.4); }
+}
+
+.vt-hero h1 {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, #a29bfe 50%, #fd79a8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.vt-hero p {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ===== VIDEO SECTION ===== */
+.vt-video-section {
+  margin-bottom: 40px;
+}
+
+.vt-video-wrapper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.3),
+    0 0 40px rgba(108,92,231,0.15);
+}
+
+.vt-video-inner {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 */
+  background: #000;
+}
+
+.vt-video-inner video,
+.vt-video-inner iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+}
+
+/* Custom Play Overlay */
+.vt-play-overlay {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  z-index: 5;
+  transition: opacity 0.4s ease;
+}
+
+.vt-play-overlay.vt-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.vt-play-btn {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6c5ce7, #e84393);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(108,92,231,0.5);
+  transition: transform 0.3s, box-shadow 0.3s;
+  margin-bottom: 16px;
+}
+
+.vt-play-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 60px rgba(108,92,231,0.7);
+}
+
+.vt-play-btn svg {
+  width: 36px;
+  height: 36px;
+  margin-left: 4px;
+  fill: #fff;
+}
+
+.vt-play-overlay span {
+  font-size: 16px;
+  color: rgba(255,255,255,0.8);
+  font-weight: 500;
+}
+
+/* ===== PROGRESS BAR ===== */
+.vt-progress-section {
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.03);
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.vt-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.vt-progress-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+.vt-progress-percent {
+  font-size: 14px;
+  font-weight: 700;
+  color: #a29bfe;
+}
+
+.vt-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.vt-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6c5ce7, #e84393, #fd79a8);
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.vt-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: vt-shimmer 2s infinite;
+}
+
+@keyframes vt-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.vt-progress-milestones {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.vt-milestone {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  transition: color 0.3s;
+}
+
+.vt-milestone.vt-reached {
+  color: #00b894;
+  font-weight: 600;
+}
+
+/* ===== TIME DISPLAY ===== */
+.vt-time-info {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.vt-time-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+}
+
+.vt-time-item span {
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+}
+
+/* ===== BONUS BUTTON ===== */
+.vt-bonus-section {
+  text-align: center;
+  margin: 40px 0;
+  padding: 40px 24px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.vt-bonus-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent, rgba(108,92,231,0.1), transparent, rgba(232,67,147,0.1), transparent);
+  animation: vt-rotate 10s linear infinite;
+}
+
+@keyframes vt-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.vt-bonus-content {
+  position: relative;
+  z-index: 1;
+}
+
+.vt-bonus-lock-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  transition: transform 0.5s;
+}
+
+.vt-bonus-section.vt-unlocked .vt-bonus-lock-icon {
+  animation: vt-unlock 0.6s ease forwards;
+}
+
+@keyframes vt-unlock {
+  0% { transform: scale(1) rotate(0deg); }
+  30% { transform: scale(1.3) rotate(-10deg); }
+  60% { transform: scale(0.8) rotate(5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.vt-bonus-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.vt-bonus-subtitle {
+  font-size: 15px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.vt-bonus-btn {
+  display: inline-block;
+  padding: 16px 40px;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.vt-bonus-btn.vt-locked {
+  background: rgba(255,255,255,0.1);
+  color: rgba(255,255,255,0.3);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.vt-bonus-btn.vt-active {
+  background: linear-gradient(135deg, #6c5ce7, #e84393);
+  box-shadow: 0 8px 30px rgba(108,92,231,0.4);
+  animation: vt-pulse-btn 2s ease-in-out infinite;
+}
+
+.vt-bonus-btn.vt-active:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(108,92,231,0.6);
+}
+
+@keyframes vt-pulse-btn {
+  0%, 100% { box-shadow: 0 8px 30px rgba(108,92,231,0.4); }
+  50% { box-shadow: 0 8px 50px rgba(108,92,231,0.6); }
+}
+
+.vt-confetti-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+
+/* ===== GAMIFICATION SECTION ===== */
+.vt-gamification {
+  margin: 40px 0;
+}
+
+.vt-section-heading {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.vt-section-heading h2 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #fff, #a29bfe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.vt-section-heading p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.5);
+}
+
+.vt-tasks-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.vt-task-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 28px 24px;
+  text-align: center;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+
+.vt-task-card:hover {
+  border-color: rgba(108,92,231,0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+}
+
+.vt-task-card.vt-task-done {
+  border-color: rgba(0,184,148,0.3);
+  background: rgba(0,184,148,0.05);
+}
+
+.vt-task-card.vt-task-done::after {
+  content: '';
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: #00b894;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vt-task-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+}
+
+.vt-task-card:nth-child(1) .vt-task-icon {
+  background: linear-gradient(135deg, rgba(108,92,231,0.2), rgba(108,92,231,0.05));
+}
+
+.vt-task-card:nth-child(2) .vt-task-icon {
+  background: linear-gradient(135deg, rgba(232,67,147,0.2), rgba(232,67,147,0.05));
+}
+
+.vt-task-card:nth-child(3) .vt-task-icon {
+  background: linear-gradient(135deg, rgba(0,184,148,0.2), rgba(0,184,148,0.05));
+}
+
+.vt-task-card h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: #fff;
+}
+
+.vt-task-card p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+.vt-task-reward-badge {
+  display: inline-block;
+  background: rgba(255,215,0,0.15);
+  border: 1px solid rgba(255,215,0,0.2);
+  color: #ffd700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.vt-task-btn {
+  display: inline-block;
+  width: 100%;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  color: #fff;
+}
+
+.vt-task-btn-primary {
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+}
+
+.vt-task-btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(108,92,231,0.3);
+  transform: translateY(-1px);
+}
+
+.vt-task-btn-pink {
+  background: linear-gradient(135deg, #e84393, #fd79a8);
+}
+
+.vt-task-btn-pink:hover {
+  box-shadow: 0 6px 20px rgba(232,67,147,0.3);
+  transform: translateY(-1px);
+}
+
+.vt-task-btn-green {
+  background: linear-gradient(135deg, #00b894, #55efc4);
+  color: #0a0a1a;
+}
+
+.vt-task-btn-green:hover {
+  box-shadow: 0 6px 20px rgba(0,184,148,0.3);
+  transform: translateY(-1px);
+}
+
+.vt-task-btn-done {
+  background: rgba(0,184,148,0.2);
+  color: #00b894;
+  cursor: default;
+}
+
+/* ===== ACHIEVEMENTS BAR ===== */
+.vt-achievements {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+
+.vt-achievement {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  transition: all 0.3s;
+}
+
+.vt-achievement.vt-earned {
+  border-color: rgba(255,215,0,0.3);
+  background: rgba(255,215,0,0.08);
+  color: #ffd700;
+}
+
+.vt-achievement-icon {
+  font-size: 18px;
+}
+
+/* ===== EXPERT SECTION ===== */
+.vt-expert {
+  margin: 60px 0;
+  padding: 48px 32px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.vt-expert-photo-wrapper {
+  flex-shrink: 0;
+  position: relative;
+}
+
+.vt-expert-photo {
+  width: 180px;
+  height: 180px;
+  border-radius: 24px;
+  object-fit: cover;
+  border: 3px solid rgba(108,92,231,0.3);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.vt-expert-photo-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: -6px;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #6c5ce7, #e84393);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vt-expert-info {
+  flex: 1;
+}
+
+.vt-expert-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #a29bfe;
+  margin-bottom: 8px;
+}
+
+.vt-expert-name {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.vt-expert-title {
+  font-size: 15px;
+  color: #fd79a8;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.vt-expert-desc {
+  font-size: 15px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.vt-expert-stats {
+  display: flex;
+  gap: 24px;
+}
+
+.vt-expert-stat {
+  text-align: center;
+}
+
+.vt-expert-stat-value {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #6c5ce7, #e84393);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.vt-expert-stat-label {
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+/* ===== FOOTER CTA ===== */
+.vt-footer-cta {
+  text-align: center;
+  padding: 48px 24px 60px;
+  position: relative;
+}
+
+.vt-footer-cta h3 {
+  font-size: 24px;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+
+.vt-footer-cta p {
+  font-size: 15px;
+  color: rgba(255,255,255,0.5);
+  margin-bottom: 24px;
+}
+
+/* ===== TOAST NOTIFICATION ===== */
+.vt-toast {
+  position: fixed;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-100px);
+  background: rgba(0,184,148,0.95);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  z-index: 10000;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+}
+
+.vt-toast.vt-toast-visible {
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ===== SHARE MODAL ===== */
+.vt-modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  padding: 20px;
+}
+
+.vt-modal-overlay.vt-modal-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.vt-modal-box {
+  background: linear-gradient(180deg, #1a1a3e, #0f0f2d);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 36px;
+  max-width: 440px;
+  width: 100%;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform 0.3s;
+}
+
+.vt-modal-visible .vt-modal-box {
+  transform: scale(1);
+}
+
+.vt-modal-box h3 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.vt-modal-box p {
+  font-size: 14px;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.vt-share-link-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.vt-share-input {
+  flex: 1;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.vt-share-copy-btn {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.vt-share-copy-btn:hover {
+  transform: scale(1.05);
+}
+
+.vt-share-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.vt-share-tg, .vt-share-wa, .vt-share-vk {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+  color: #fff;
+}
+
+.vt-share-tg { background: #0088cc; }
+.vt-share-wa { background: #25d366; }
+.vt-share-vk { background: #4a76a8; }
+
+.vt-modal-close {
+  padding: 10px 30px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  color: rgba(255,255,255,0.6);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.vt-modal-close:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .vt-hero h1 {
+    font-size: 28px;
+  }
+
+  .vt-hero p {
+    font-size: 15px;
+  }
+
+  .vt-tasks-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vt-expert {
+    flex-direction: column;
+    text-align: center;
+    padding: 32px 24px;
+    gap: 24px;
+  }
+
+  .vt-expert-photo {
+    width: 140px;
+    height: 140px;
+  }
+
+  .vt-expert-stats {
+    justify-content: center;
+  }
+
+  .vt-section-heading h2 {
+    font-size: 22px;
+  }
+
+  .vt-bonus-title {
+    font-size: 18px;
+  }
+
+  .vt-share-buttons {
+    flex-direction: column;
+  }
+
+  .vt-hero {
+    padding: 40px 0 30px;
+  }
+}
+
+@media (max-width: 480px) {
+  .vt-container {
+    padding: 0 12px;
+  }
+
+  .vt-hero h1 {
+    font-size: 24px;
+  }
+
+  .vt-expert-name {
+    font-size: 22px;
+  }
+
+  .vt-task-card {
+    padding: 20px 16px;
+  }
+
+  .vt-progress-section {
+    padding: 16px;
+  }
+}
+</style>
+
+<!-- ===== PAGE START ===== -->
+<div class="vt-page">
+  <!-- Animated Background -->
+  <div class="vt-bg-orbs">
+    <div class="vt-orb"></div>
+    <div class="vt-orb"></div>
+    <div class="vt-orb"></div>
+  </div>
+
+  <div class="vt-container">
+
+    <!-- ===== HERO ===== -->
+    <section class="vt-hero">
+      <div class="vt-hero-badge">Эксклюзивный контент</div>
+      <h1>Посмотрите видео и заберите свои бонусы</h1>
+      <p>Посмотрите обучающее видео полностью, выполните простые задания и получите ценные бонусы от нашего эксперта</p>
+    </section>
+
+    <!-- ===== VIDEO ===== -->
+    <section class="vt-video-section">
+      <div class="vt-video-wrapper">
+        <div class="vt-video-inner">
+          <!--
+            ============================================
+            ВАРИАНТ 1: HTML5 Video (прямой URL на файл)
+            Раскомментируйте и укажите свой URL:
+            ============================================
+          -->
+          <video id="vtVideo" playsinline preload="metadata">
+            <source src="YOUR_VIDEO_URL_HERE.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+          </video>
+
+          <!--
+            ============================================
+            ВАРИАНТ 2: YouTube (iframe API)
+            Закомментируйте <video> выше и раскомментируйте:
+            ============================================
+          -->
+          <!-- <div id="ytPlayer"></div> -->
+
+          <!-- Play Overlay -->
+          <div class="vt-play-overlay" id="vtPlayOverlay">
+            <div class="vt-play-btn">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            <span>Нажмите, чтобы начать просмотр</span>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="vt-progress-section">
+          <div class="vt-progress-header">
+            <span class="vt-progress-label">Прогресс просмотра</span>
+            <span class="vt-progress-percent" id="vtProgressPercent">0%</span>
+          </div>
+          <div class="vt-progress-bar">
+            <div class="vt-progress-fill" id="vtProgressFill"></div>
+          </div>
+          <div class="vt-progress-milestones">
+            <span class="vt-milestone" data-at="0">Начало</span>
+            <span class="vt-milestone" data-at="25">25%</span>
+            <span class="vt-milestone" data-at="50">50%</span>
+            <span class="vt-milestone" data-at="75">75%</span>
+            <span class="vt-milestone" data-at="90">90%</span>
+            <span class="vt-milestone" data-at="100">Финиш</span>
+          </div>
+
+          <!-- Time Info -->
+          <div class="vt-time-info">
+            <div class="vt-time-item">
+              Просмотрено: <span id="vtTimeWatched">00:00</span>
+            </div>
+            <div class="vt-time-item">
+              Осталось: <span id="vtTimeRemaining">40:00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ACHIEVEMENTS ===== -->
+    <div class="vt-achievements">
+      <div class="vt-achievement" id="vtAch1">
+        <span class="vt-achievement-icon">&#127916;</span>
+        <span>Видео просмотрено</span>
+      </div>
+      <div class="vt-achievement" id="vtAch2">
+        <span class="vt-achievement-icon">&#128227;</span>
+        <span>Подписка на канал</span>
+      </div>
+      <div class="vt-achievement" id="vtAch3">
+        <span class="vt-achievement-icon">&#128588;</span>
+        <span>Поделились с другом</span>
+      </div>
+    </div>
+
+    <!-- ===== BONUS BUTTON ===== -->
+    <section class="vt-bonus-section" id="vtBonusSection">
+      <div class="vt-confetti-container" id="vtConfetti"></div>
+      <div class="vt-bonus-content">
+        <div class="vt-bonus-lock-icon" id="vtLockIcon">&#128274;</div>
+        <h3 class="vt-bonus-title" id="vtBonusTitle">Досмотрите видео, чтобы разблокировать бонусы</h3>
+        <p class="vt-bonus-subtitle" id="vtBonusSubtitle">Вам нужно посмотреть не менее 90% видео, чтобы получить доступ к бонусам</p>
+        <a
+          href="https://t.me/m/l_zzgCE8ZGQy"
+          target="_blank"
+          class="vt-bonus-btn vt-locked"
+          id="vtBonusBtn"
+        >
+          &#128274; Забрать бонусы
+        </a>
+      </div>
+    </section>
+
+    <!-- ===== GAMIFICATION ===== -->
+    <section class="vt-gamification">
+      <div class="vt-section-heading">
+        <h2>Выполняйте задания — получайте награды</h2>
+        <p>Каждое выполненное задание приближает вас к цели</p>
+      </div>
+
+      <div class="vt-tasks-grid">
+        <!-- Task 1: Watch Video -->
+        <div class="vt-task-card" id="vtTaskWatch">
+          <div class="vt-task-icon">&#127916;</div>
+          <h3>Посмотреть видео</h3>
+          <p>Досмотрите видео до конца для получения награды</p>
+          <div class="vt-task-reward-badge">+100 XP</div>
+          <button class="vt-task-btn vt-task-btn-primary" id="vtTaskWatchBtn" onclick="document.getElementById('vtVideo').scrollIntoView({behavior:'smooth'})">
+            Смотреть
+          </button>
+        </div>
+
+        <!-- Task 2: Subscribe -->
+        <div class="vt-task-card" id="vtTaskSubscribe">
+          <div class="vt-task-icon">&#128227;</div>
+          <h3>Подписаться на канал</h3>
+          <p>Подпишитесь на наш Telegram канал для обновлений</p>
+          <div class="vt-task-reward-badge">+50 XP</div>
+          <button class="vt-task-btn vt-task-btn-pink" id="vtSubscribeBtn">
+            Подписаться
+          </button>
+        </div>
+
+        <!-- Task 3: Share -->
+        <div class="vt-task-card" id="vtTaskShare">
+          <div class="vt-task-icon">&#128588;</div>
+          <h3>Поделиться с другом</h3>
+          <p>Отправьте видео другу и получите бонус</p>
+          <div class="vt-task-reward-badge">+50 XP</div>
+          <button class="vt-task-btn vt-task-btn-green" id="vtShareBtn">
+            Поделиться
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== EXPERT SECTION ===== -->
+    <section class="vt-expert" id="vtExpertSection">
+      <div class="vt-expert-photo-wrapper">
+        <!--
+          Замените src на URL фотографии вашего эксперта.
+          Рекомендуемый размер: 360x360px
+        -->
+        <img
+          src="https://via.placeholder.com/360x360/1a1a3e/a29bfe?text=Expert"
+          alt="Фото эксперта"
+          class="vt-expert-photo"
+          id="vtExpertPhoto"
+        >
+      </div>
+      <div class="vt-expert-info">
+        <div class="vt-expert-label">Ваш эксперт</div>
+        <h2 class="vt-expert-name" id="vtExpertName">Имя Эксперта</h2>
+        <div class="vt-expert-title" id="vtExpertTitle">Бизнес-коуч, предприниматель</div>
+        <p class="vt-expert-desc" id="vtExpertDesc">
+          Более 10 лет в бизнесе. Помог сотням клиентов выйти на новый уровень дохода.
+          Автор уникальной методики, которая уже доказала свою эффективность.
+          В этом видео делюсь ключевыми инсайтами, которые изменят ваш подход к делу.
+        </p>
+        <div class="vt-expert-stats">
+          <div class="vt-expert-stat">
+            <span class="vt-expert-stat-value">10+</span>
+            <span class="vt-expert-stat-label">лет опыта</span>
+          </div>
+          <div class="vt-expert-stat">
+            <span class="vt-expert-stat-value">500+</span>
+            <span class="vt-expert-stat-label">учеников</span>
+          </div>
+          <div class="vt-expert-stat">
+            <span class="vt-expert-stat-value">50M+</span>
+            <span class="vt-expert-stat-label">оборот</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FOOTER CTA ===== -->
+    <section class="vt-footer-cta">
+      <h3>Не упустите свой шанс</h3>
+      <p>Посмотрите видео, выполните задания и заберите бонусы уже сейчас</p>
+      <button class="vt-bonus-btn vt-active" onclick="document.getElementById('vtVideo').scrollIntoView({behavior:'smooth'})">
+        Начать просмотр
+      </button>
+    </section>
+
+  </div><!-- .vt-container -->
+
+  <!-- ===== TOAST ===== -->
+  <div class="vt-toast" id="vtToast"></div>
+
+  <!-- ===== SHARE MODAL ===== -->
+  <div class="vt-modal-overlay" id="vtShareModal">
+    <div class="vt-modal-box">
+      <h3>&#128588; Поделитесь видео с другом</h3>
+      <p>Скопируйте ссылку и отправьте другу, или выберите мессенджер</p>
+      <div class="vt-share-link-box">
+        <input type="text" class="vt-share-input" id="vtShareLink" readonly value="">
+        <button class="vt-share-copy-btn" id="vtCopyShareLink" title="Скопировать">&#128203;</button>
+      </div>
+      <div class="vt-share-buttons">
+        <a class="vt-share-tg" id="vtShareTg" href="#" target="_blank">Telegram</a>
+        <a class="vt-share-wa" id="vtShareWa" href="#" target="_blank">WhatsApp</a>
+        <a class="vt-share-vk" id="vtShareVk" href="#" target="_blank">VK</a>
+      </div>
+      <button class="vt-modal-close" id="vtCloseShareModal">Закрыть</button>
+    </div>
+  </div>
+</div><!-- .vt-page -->
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================
+  // CONFIGURATION — Настройте под себя
+  // ============================================
+  var CONFIG = {
+    // Минимальный процент просмотра для разблокировки бонуса (0-100)
+    UNLOCK_PERCENT: 90,
+    // Ссылка на Telegram канал для подписки
+    CHANNEL_URL: 'https://t.me/YOUR_CHANNEL',
+    // Ссылка на текущую страницу (для шаринга) — замените на реальный URL
+    PAGE_URL: window.location.href,
+    // Текст для шаринга
+    SHARE_TEXT: 'Посмотри это видео — очень полезный контент! Там ещё можно забрать бонусы.',
+    // Ключ localStorage для сохранения прогресса
+    STORAGE_KEY: 'vt_video_progress',
+    // YouTube Video ID (если используете YouTube вариант)
+    YT_VIDEO_ID: ''  // например: 'dQw4w9WgXcQ'
+  };
+
+  // ============================================
+  // STATE
+  // ============================================
+  var state = {
+    videoWatched: false,
+    subscribed: false,
+    shared: false,
+    maxProgress: 0,
+    bonusUnlocked: false
+  };
+
+  // ============================================
+  // DOM ELEMENTS
+  // ============================================
+  var video = document.getElementById('vtVideo');
+  var playOverlay = document.getElementById('vtPlayOverlay');
+  var progressFill = document.getElementById('vtProgressFill');
+  var progressPercent = document.getElementById('vtProgressPercent');
+  var timeWatched = document.getElementById('vtTimeWatched');
+  var timeRemaining = document.getElementById('vtTimeRemaining');
+  var bonusSection = document.getElementById('vtBonusSection');
+  var bonusBtn = document.getElementById('vtBonusBtn');
+  var bonusTitle = document.getElementById('vtBonusTitle');
+  var bonusSubtitle = document.getElementById('vtBonusSubtitle');
+  var lockIcon = document.getElementById('vtLockIcon');
+  var toast = document.getElementById('vtToast');
+  var shareModal = document.getElementById('vtShareModal');
+  var shareLink = document.getElementById('vtShareLink');
+  var confettiContainer = document.getElementById('vtConfetti');
+
+  // ============================================
+  // LOAD SAVED STATE
+  // ============================================
+  function loadState() {
+    try {
+      var saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+      if (saved) {
+        var parsed = JSON.parse(saved);
+        state.videoWatched = parsed.videoWatched || false;
+        state.subscribed = parsed.subscribed || false;
+        state.shared = parsed.shared || false;
+        state.maxProgress = parsed.maxProgress || 0;
+        state.bonusUnlocked = parsed.bonusUnlocked || false;
+        applyState();
+      }
+    } catch(e) {}
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(state));
+    } catch(e) {}
+  }
+
+  // ============================================
+  // APPLY STATE TO UI
+  // ============================================
+  function applyState() {
+    // Progress
+    progressFill.style.width = state.maxProgress + '%';
+    progressPercent.textContent = state.maxProgress + '%';
+
+    // Milestones
+    var milestones = document.querySelectorAll('.vt-milestone');
+    milestones.forEach(function(m) {
+      var at = parseInt(m.getAttribute('data-at'), 10);
+      if (state.maxProgress >= at) {
+        m.classList.add('vt-reached');
+      }
+    });
+
+    // Achievements
+    if (state.videoWatched) {
+      document.getElementById('vtAch1').classList.add('vt-earned');
+      markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+    }
+    if (state.subscribed) {
+      document.getElementById('vtAch2').classList.add('vt-earned');
+      markTaskDone('vtTaskSubscribe', 'vtSubscribeBtn');
+    }
+    if (state.shared) {
+      document.getElementById('vtAch3').classList.add('vt-earned');
+      markTaskDone('vtTaskShare', 'vtShareBtn');
+    }
+
+    // Bonus
+    if (state.bonusUnlocked) {
+      unlockBonus(true);
+    }
+  }
+
+  function markTaskDone(cardId, btnId) {
+    var card = document.getElementById(cardId);
+    var btn = document.getElementById(btnId);
+    if (card) card.classList.add('vt-task-done');
+    if (btn) {
+      btn.textContent = '\u2713 Выполнено';
+      btn.className = 'vt-task-btn vt-task-btn-done';
+      btn.disabled = true;
+    }
+  }
+
+  // ============================================
+  // VIDEO TRACKING
+  // ============================================
+  function initVideo() {
+    if (!video) return;
+
+    // Play overlay click
+    if (playOverlay) {
+      playOverlay.addEventListener('click', function() {
+        video.play();
+        playOverlay.classList.add('vt-hidden');
+      });
+    }
+
+    // When video starts playing, hide overlay
+    video.addEventListener('play', function() {
+      if (playOverlay) playOverlay.classList.add('vt-hidden');
+    });
+
+    // Pause — show overlay again
+    video.addEventListener('pause', function() {
+      if (!video.ended && playOverlay) {
+        playOverlay.classList.remove('vt-hidden');
+      }
+    });
+
+    // Time update — track progress
+    video.addEventListener('timeupdate', function() {
+      if (!video.duration || video.duration === Infinity) return;
+
+      var current = video.currentTime;
+      var duration = video.duration;
+      var percent = Math.floor((current / duration) * 100);
+
+      // Only update if progress increased (prevent rewind cheats)
+      if (percent > state.maxProgress) {
+        state.maxProgress = percent;
+        saveState();
+      }
+
+      // Update UI
+      progressFill.style.width = state.maxProgress + '%';
+      progressPercent.textContent = state.maxProgress + '%';
+
+      // Time display
+      timeWatched.textContent = formatTime(current);
+      timeRemaining.textContent = formatTime(duration - current);
+
+      // Milestones
+      var milestones = document.querySelectorAll('.vt-milestone');
+      milestones.forEach(function(m) {
+        var at = parseInt(m.getAttribute('data-at'), 10);
+        if (state.maxProgress >= at) {
+          m.classList.add('vt-reached');
+        }
+      });
+
+      // Check unlock
+      if (state.maxProgress >= CONFIG.UNLOCK_PERCENT && !state.bonusUnlocked) {
+        state.bonusUnlocked = true;
+        state.videoWatched = true;
+        saveState();
+        unlockBonus(false);
+        document.getElementById('vtAch1').classList.add('vt-earned');
+        markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+        showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
+      }
+    });
+
+    // Video ended
+    video.addEventListener('ended', function() {
+      state.maxProgress = 100;
+      progressFill.style.width = '100%';
+      progressPercent.textContent = '100%';
+
+      if (!state.bonusUnlocked) {
+        state.bonusUnlocked = true;
+        state.videoWatched = true;
+        saveState();
+        unlockBonus(false);
+        document.getElementById('vtAch1').classList.add('vt-earned');
+        markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+        showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
+      }
+      saveState();
+    });
+  }
+
+  // ============================================
+  // FORMAT TIME
+  // ============================================
+  function formatTime(seconds) {
+    if (isNaN(seconds) || !isFinite(seconds)) return '00:00';
+    var m = Math.floor(seconds / 60);
+    var s = Math.floor(seconds % 60);
+    return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  }
+
+  // ============================================
+  // UNLOCK BONUS
+  // ============================================
+  function unlockBonus(silent) {
+    bonusSection.classList.add('vt-unlocked');
+    lockIcon.innerHTML = '&#127881;';
+    bonusTitle.textContent = 'Бонусы разблокированы!';
+    bonusSubtitle.textContent = 'Нажмите кнопку ниже, чтобы забрать свои бонусы. Напишите обратную связь по видео.';
+    bonusBtn.className = 'vt-bonus-btn vt-active';
+    bonusBtn.innerHTML = '&#127873; Забрать бонусы';
+    bonusBtn.style.pointerEvents = 'auto';
+
+    if (!silent) {
+      createConfetti();
+    }
+  }
+
+  // ============================================
+  // CONFETTI EFFECT
+  // ============================================
+  function createConfetti() {
+    var colors = ['#6c5ce7', '#e84393', '#ffd700', '#00b894', '#fd79a8', '#a29bfe'];
+    for (var i = 0; i < 50; i++) {
+      (function(index) {
+        setTimeout(function() {
+          var el = document.createElement('div');
+          el.style.cssText = 'position:absolute;width:10px;height:10px;border-radius:' +
+            (Math.random() > 0.5 ? '50%' : '2px') +
+            ';background:' + colors[Math.floor(Math.random() * colors.length)] +
+            ';top:50%;left:' + (Math.random() * 100) + '%;opacity:1;pointer-events:none;' +
+            'animation:vtConfettiFall ' + (1.5 + Math.random() * 2) + 's ease-out forwards;';
+          confettiContainer.appendChild(el);
+          setTimeout(function() { el.remove(); }, 4000);
+        }, index * 30);
+      })(i);
+    }
+  }
+
+  // Add confetti animation dynamically
+  var confettiStyle = document.createElement('style');
+  confettiStyle.textContent = '@keyframes vtConfettiFall{0%{transform:translateY(0) rotate(0deg) scale(1);opacity:1;}100%{transform:translateY(-300px) rotate(' + (360 + Math.random()*360) + 'deg) translateX(' + (Math.random()*200-100) + 'px) scale(0);opacity:0;}}';
+  document.head.appendChild(confettiStyle);
+
+  // ============================================
+  // TOAST NOTIFICATION
+  // ============================================
+  function showToast(message) {
+    toast.innerHTML = message;
+    toast.classList.add('vt-toast-visible');
+    setTimeout(function() {
+      toast.classList.remove('vt-toast-visible');
+    }, 3500);
+  }
+
+  // ============================================
+  // SUBSCRIBE TASK
+  // ============================================
+  function initSubscribeTask() {
+    var btn = document.getElementById('vtSubscribeBtn');
+    if (!btn || state.subscribed) return;
+
+    btn.addEventListener('click', function() {
+      // Open channel in new tab
+      window.open(CONFIG.CHANNEL_URL, '_blank');
+
+      // After delay, mark as subscribed (in production check via bot API)
+      setTimeout(function() {
+        state.subscribed = true;
+        saveState();
+        document.getElementById('vtAch2').classList.add('vt-earned');
+        markTaskDone('vtTaskSubscribe', 'vtSubscribeBtn');
+        showToast('&#128227; Спасибо за подписку! +50 XP');
+      }, 3000);
+    });
+  }
+
+  // ============================================
+  // SHARE TASK
+  // ============================================
+  function initShareTask() {
+    var btn = document.getElementById('vtShareBtn');
+    if (!btn) return;
+
+    btn.addEventListener('click', function() {
+      if (state.shared) return;
+      openShareModal();
+    });
+
+    // Close modal
+    var closeBtn = document.getElementById('vtCloseShareModal');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', function() {
+        shareModal.classList.remove('vt-modal-visible');
+      });
+    }
+
+    shareModal.addEventListener('click', function(e) {
+      if (e.target === shareModal) {
+        shareModal.classList.remove('vt-modal-visible');
+      }
+    });
+
+    // Copy link
+    var copyBtn = document.getElementById('vtCopyShareLink');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', function() {
+        copyToClipboard(shareLink.value);
+        showToast('&#128203; Ссылка скопирована!');
+        markShared();
+      });
+    }
+
+    // Share buttons
+    var tgBtn = document.getElementById('vtShareTg');
+    var waBtn = document.getElementById('vtShareWa');
+    var vkBtn = document.getElementById('vtShareVk');
+
+    if (tgBtn) tgBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open('https://t.me/share/url?url=' + encodeURIComponent(CONFIG.PAGE_URL) + '&text=' + encodeURIComponent(CONFIG.SHARE_TEXT), '_blank');
+      markShared();
+    });
+
+    if (waBtn) waBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open('https://wa.me/?text=' + encodeURIComponent(CONFIG.SHARE_TEXT + ' ' + CONFIG.PAGE_URL), '_blank');
+      markShared();
+    });
+
+    if (vkBtn) vkBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      window.open('https://vk.com/share.php?url=' + encodeURIComponent(CONFIG.PAGE_URL) + '&title=' + encodeURIComponent(CONFIG.SHARE_TEXT), '_blank');
+      markShared();
+    });
+  }
+
+  function openShareModal() {
+    shareLink.value = CONFIG.PAGE_URL;
+    shareModal.classList.add('vt-modal-visible');
+  }
+
+  function markShared() {
+    if (state.shared) return;
+    state.shared = true;
+    saveState();
+    document.getElementById('vtAch3').classList.add('vt-earned');
+    markTaskDone('vtTaskShare', 'vtShareBtn');
+    showToast('&#128588; Спасибо! Вы поделились видео! +50 XP');
+    setTimeout(function() {
+      shareModal.classList.remove('vt-modal-visible');
+    }, 1500);
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text);
+    } else {
+      var textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.left = '-9999px';
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textarea);
+    }
+  }
+
+  // ============================================
+  // YOUTUBE IFRAME API SUPPORT
+  // ============================================
+  function initYouTube() {
+    if (!CONFIG.YT_VIDEO_ID) return;
+
+    // Hide HTML5 video, show YT player
+    if (video) video.style.display = 'none';
+
+    // Load YouTube API
+    var tag = document.createElement('script');
+    tag.src = 'https://www.youtube.com/iframe_api';
+    var firstScript = document.getElementsByTagName('script')[0];
+    firstScript.parentNode.insertBefore(tag, firstScript);
+
+    window.onYouTubeIframeAPIReady = function() {
+      var ytEl = document.getElementById('ytPlayer');
+      if (!ytEl) {
+        ytEl = document.createElement('div');
+        ytEl.id = 'ytPlayer';
+        video.parentNode.appendChild(ytEl);
+      }
+      ytEl.style.display = 'block';
+
+      window.vtYTPlayer = new YT.Player('ytPlayer', {
+        videoId: CONFIG.YT_VIDEO_ID,
+        playerVars: {
+          autoplay: 0,
+          controls: 1,
+          modestbranding: 1,
+          rel: 0,
+          fs: 1
+        },
+        events: {
+          onReady: function(event) {
+            // Hide play overlay click = play
+            playOverlay.addEventListener('click', function() {
+              event.target.playVideo();
+              playOverlay.classList.add('vt-hidden');
+            });
+          },
+          onStateChange: function(event) {
+            if (event.data === YT.PlayerState.PLAYING) {
+              playOverlay.classList.add('vt-hidden');
+              startYTTracking();
+            } else if (event.data === YT.PlayerState.PAUSED) {
+              playOverlay.classList.remove('vt-hidden');
+              stopYTTracking();
+            } else if (event.data === YT.PlayerState.ENDED) {
+              state.maxProgress = 100;
+              progressFill.style.width = '100%';
+              progressPercent.textContent = '100%';
+              if (!state.bonusUnlocked) {
+                state.bonusUnlocked = true;
+                state.videoWatched = true;
+                saveState();
+                unlockBonus(false);
+                document.getElementById('vtAch1').classList.add('vt-earned');
+                markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+                showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
+              }
+              stopYTTracking();
+            }
+          }
+        }
+      });
+    };
+  }
+
+  var ytTrackingInterval = null;
+
+  function startYTTracking() {
+    if (ytTrackingInterval) return;
+    ytTrackingInterval = setInterval(function() {
+      if (!window.vtYTPlayer || typeof window.vtYTPlayer.getCurrentTime !== 'function') return;
+      var current = window.vtYTPlayer.getCurrentTime();
+      var duration = window.vtYTPlayer.getDuration();
+      if (!duration) return;
+
+      var percent = Math.floor((current / duration) * 100);
+      if (percent > state.maxProgress) {
+        state.maxProgress = percent;
+        saveState();
+      }
+
+      progressFill.style.width = state.maxProgress + '%';
+      progressPercent.textContent = state.maxProgress + '%';
+      timeWatched.textContent = formatTime(current);
+      timeRemaining.textContent = formatTime(duration - current);
+
+      var milestones = document.querySelectorAll('.vt-milestone');
+      milestones.forEach(function(m) {
+        var at = parseInt(m.getAttribute('data-at'), 10);
+        if (state.maxProgress >= at) {
+          m.classList.add('vt-reached');
+        }
+      });
+
+      if (state.maxProgress >= CONFIG.UNLOCK_PERCENT && !state.bonusUnlocked) {
+        state.bonusUnlocked = true;
+        state.videoWatched = true;
+        saveState();
+        unlockBonus(false);
+        document.getElementById('vtAch1').classList.add('vt-earned');
+        markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+        showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
+      }
+    }, 1000);
+  }
+
+  function stopYTTracking() {
+    if (ytTrackingInterval) {
+      clearInterval(ytTrackingInterval);
+      ytTrackingInterval = null;
+    }
+  }
+
+  // ============================================
+  // ANTI-CHEAT: Prevent skipping via seeked event
+  // ============================================
+  function initAntiCheat() {
+    if (!video) return;
+
+    var lastTime = 0;
+
+    video.addEventListener('timeupdate', function() {
+      // Allow normal playback (small jumps are OK)
+      if (Math.abs(video.currentTime - lastTime) < 3) {
+        lastTime = video.currentTime;
+      }
+    });
+
+    video.addEventListener('seeking', function() {
+      // If trying to skip ahead of max watched position
+      var maxWatchedTime = (state.maxProgress / 100) * video.duration;
+      if (video.currentTime > maxWatchedTime + 5) {
+        video.currentTime = maxWatchedTime;
+        showToast('&#9888;&#65039; Нельзя перематывать вперёд. Смотрите последовательно.');
+      }
+      lastTime = video.currentTime;
+    });
+  }
+
+  // ============================================
+  // SMOOTH SCROLL TO VIDEO ON HASH
+  // ============================================
+  function initSmoothScroll() {
+    if (window.location.hash === '#video') {
+      setTimeout(function() {
+        var videoSection = document.querySelector('.vt-video-section');
+        if (videoSection) videoSection.scrollIntoView({ behavior: 'smooth' });
+      }, 500);
+    }
+  }
+
+  // ============================================
+  // INIT
+  // ============================================
+  function init() {
+    loadState();
+
+    if (CONFIG.YT_VIDEO_ID) {
+      initYouTube();
+    } else {
+      initVideo();
+      initAntiCheat();
+    }
+
+    initSubscribeTask();
+    initShareTask();
+    initSmoothScroll();
+  }
+
+  // Run when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
+</script>
