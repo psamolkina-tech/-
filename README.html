@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Video Rewards Mini App - Documentation</title>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --bg-secondary: #f6f8fa;
+            --text: #1f2328;
+            --text-secondary: #656d76;
+            --border: #d0d7de;
+            --accent: #0969da;
+            --accent-bg: #ddf4ff;
+            --code-bg: #f6f8fa;
+            --code-block-bg: #161b22;
+            --code-block-text: #e6edf3;
+            --success: #1a7f37;
+            --warning: #9a6700;
+            --heading-border: #d0d7de;
+            --table-border: #d0d7de;
+            --table-row-alt: #f6f8fa;
+            --shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0d1117;
+                --bg-secondary: #161b22;
+                --text: #e6edf3;
+                --text-secondary: #8b949e;
+                --border: #30363d;
+                --accent: #58a6ff;
+                --accent-bg: #1f3a5f;
+                --code-bg: #161b22;
+                --code-block-bg: #0d1117;
+                --code-block-text: #e6edf3;
+                --success: #3fb950;
+                --warning: #d29922;
+                --heading-border: #21262d;
+                --table-border: #30363d;
+                --table-row-alt: #161b22;
+                --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        h1 {
+            font-size: 2em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--heading-border);
+        }
+
+        h1 .subtitle {
+            display: block;
+            font-size: 0.5em;
+            font-weight: 400;
+            color: var(--text-secondary);
+            margin-top: 8px;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--heading-border);
+        }
+
+        h3 {
+            font-size: 1.25em;
+            font-weight: 600;
+            margin-top: 24px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        ul, ol {
+            margin-bottom: 16px;
+            padding-left: 2em;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        li strong {
+            color: var(--text);
+        }
+
+        code {
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.875em;
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px 6px;
+        }
+
+        pre {
+            margin-bottom: 16px;
+            background: var(--code-block-bg);
+            color: var(--code-block-text);
+            border-radius: 8px;
+            padding: 16px;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            font-size: 0.85em;
+            color: inherit;
+            line-height: 1.5;
+        }
+
+        .lang-label {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            opacity: 0.6;
+        }
+
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .feature-card h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            margin-bottom: 0;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        .reward-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-weight: 600;
+            font-size: 1.1em;
+            margin: 12px 0 16px;
+        }
+
+        .file-tree {
+            background: var(--code-block-bg);
+            color: var(--code-block-text);
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.85em;
+            line-height: 1.8;
+            margin-bottom: 16px;
+            overflow-x: auto;
+        }
+
+        .file-tree .dir {
+            color: #79c0ff;
+        }
+
+        .file-tree .file {
+            color: #e6edf3;
+        }
+
+        .file-tree .comment {
+            color: #8b949e;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+            font-size: 0.9em;
+        }
+
+        thead th {
+            background: var(--bg-secondary);
+            text-align: left;
+            padding: 10px 14px;
+            border: 1px solid var(--table-border);
+            font-weight: 600;
+        }
+
+        tbody td {
+            padding: 10px 14px;
+            border: 1px solid var(--table-border);
+        }
+
+        tbody tr:nth-child(even) {
+            background: var(--table-row-alt);
+        }
+
+        td code {
+            white-space: nowrap;
+        }
+
+        .method-badge {
+            display: inline-block;
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            letter-spacing: 0.5px;
+        }
+
+        .method-get {
+            background: #ddf4ff;
+            color: #0969da;
+        }
+
+        .method-post {
+            background: #dafbe1;
+            color: #1a7f37;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .method-get {
+                background: #1f3a5f;
+                color: #58a6ff;
+            }
+            .method-post {
+                background: #1a3a2a;
+                color: #3fb950;
+            }
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+
+        .steps-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .steps-list li {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .steps-list li span {
+            padding-top: 2px;
+        }
+
+        .info-box {
+            border-left: 4px solid var(--accent);
+            background: var(--accent-bg);
+            padding: 12px 16px;
+            border-radius: 0 6px 6px 0;
+            margin-bottom: 16px;
+            font-size: 0.95em;
+        }
+
+        .security-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .security-list li {
+            padding: 6px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .security-list li::before {
+            content: "\2713";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .deploy-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .deploy-option {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .env-table td:first-child {
+            font-family: 'SFMono-Regular', Consolas, monospace;
+            font-size: 0.85em;
+            white-space: nowrap;
+            color: var(--accent);
+        }
+
+        footer {
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--heading-border);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <h1>
+            Telegram Video Rewards Mini App
+            <span class="subtitle">Telegram Mini App for watching videos with a rewards and discounts system</span>
+        </h1>
+
+        <!-- Functionality -->
+        <h2>Functionality</h2>
+
+        <h3>Star System</h3>
+        <div class="feature-cards">
+            <div class="feature-card">
+                <h4>Watch Video</h4>
+                <p>+1 star for watching 80% of a video</p>
+            </div>
+            <div class="feature-card">
+                <h4>Subscribe to Channel</h4>
+                <p>+1 star for subscribing</p>
+            </div>
+            <div class="feature-card">
+                <h4>Invite a Friend</h4>
+                <p>+1 star via the referral system</p>
+            </div>
+        </div>
+
+        <h3>Reward</h3>
+        <div class="reward-badge">3 stars = 60 000 RUB discount</div>
+
+        <!-- Project Structure -->
+        <h2>Project Structure</h2>
+
+        <div class="file-tree">
+<span class="dir">backend/</span>
+    <span class="file">app.py</span>           <span class="comment"># FastAPI server</span>
+    <span class="file">database.py</span>      <span class="comment"># Database configuration</span>
+    <span class="file">models.py</span>        <span class="comment"># SQLAlchemy models</span>
+    <span class="file">requirements.txt</span> <span class="comment"># Python dependencies</span>
+<span class="dir">frontend/</span>
+    <span class="file">index.html</span>       <span class="comment"># Main Mini App page</span>
+    <span class="dir">css/</span>
+        <span class="file">style.css</span>    <span class="comment"># Styles</span>
+    <span class="dir">js/</span>
+        <span class="file">app.js</span>       <span class="comment"># Client-side logic</span>
+<span class="dir">bot/</span>
+    <span class="file">bot.py</span>           <span class="comment"># Telegram bot</span>
+<span class="file">.env.example</span>         <span class="comment"># Environment variables example</span>
+<span class="file">README.md</span>
+        </div>
+
+        <!-- Installation and Setup -->
+        <h2>Installation and Setup</h2>
+
+        <h3>1. Create the Bot</h3>
+        <ol class="steps-list">
+            <li><span class="step-number">1</span><span>Open <a href="https://t.me/BotFather">@BotFather</a> in Telegram</span></li>
+            <li><span class="step-number">2</span><span>Create a new bot: <code>/newbot</code></span></li>
+            <li><span class="step-number">3</span><span>Copy the bot token</span></li>
+            <li><span class="step-number">4</span><span>Enable Mini App: <code>/newapp</code> &rarr; select the bot &rarr; enter the app URL</span></li>
+        </ol>
+
+        <h3>2. Environment Setup</h3>
+        <pre><code><span class="lang-label">bash</span># Clone the repository
+git clone &lt;repository-url&gt;
+cd telegram-video-rewards
+
+# Copy configuration
+cp .env.example .env
+
+# Edit .env
+nano .env</code></pre>
+
+        <p>Fill in the variables:</p>
+        <table class="env-table">
+            <thead>
+                <tr>
+                    <th>Variable</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>BOT_TOKEN</td>
+                    <td>Token from BotFather</td>
+                </tr>
+                <tr>
+                    <td>CHANNEL_ID</td>
+                    <td>Channel username (e.g., @mychannel)</td>
+                </tr>
+                <tr>
+                    <td>WEBAPP_URL</td>
+                    <td>URL where the app is hosted</td>
+                </tr>
+                <tr>
+                    <td>API_URL</td>
+                    <td>API server URL</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>3. Start the Backend</h3>
+        <pre><code><span class="lang-label">bash</span>cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# or
+venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start the server
+uvicorn app:app --reload --host 0.0.0.0 --port 8000</code></pre>
+
+        <h3>4. Start the Bot</h3>
+        <pre><code><span class="lang-label">bash</span>cd bot
+
+# Activate environment (if not active)
+source ../backend/venv/bin/activate
+
+# Start the bot
+python bot.py</code></pre>
+
+        <h3>5. Host the Frontend</h3>
+        <p>For local development, use the built-in server:</p>
+        <pre><code><span class="lang-label">bash</span>cd frontend
+python -m http.server 3000</code></pre>
+
+        <p>For production, recommended options:</p>
+        <div class="deploy-options">
+            <div class="deploy-option">nginx</div>
+            <div class="deploy-option">Cloudflare Pages</div>
+            <div class="deploy-option">Vercel</div>
+            <div class="deploy-option">Netlify</div>
+        </div>
+
+        <!-- API Endpoints -->
+        <h2>API Endpoints</h2>
+
+        <h3>Authentication</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge method-post">POST</span></td>
+                    <td><code>/api/auth</code></td>
+                    <td>Register / authorize user</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>User</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge method-get">GET</span></td>
+                    <td><code>/api/user/{telegram_id}</code></td>
+                    <td>Get user profile</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Videos</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge method-get">GET</span></td>
+                    <td><code>/api/videos?telegram_id={id}</code></td>
+                    <td>List of videos with progress</td>
+                </tr>
+                <tr>
+                    <td><span class="method-badge method-post">POST</span></td>
+                    <td><code>/api/video/progress?telegram_id={id}</code></td>
+                    <td>Update watch progress</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Tasks</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge method-post">POST</span></td>
+                    <td><code>/api/subscribe/check?telegram_id={id}</code></td>
+                    <td>Check channel subscription</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Referrals</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge method-get">GET</span></td>
+                    <td><code>/api/referral/stats?telegram_id={id}</code></td>
+                    <td>Referral statistics</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Discount</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Method</th>
+                    <th>Endpoint</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="method-badge method-post">POST</span></td>
+                    <td><code>/api/discount/claim?telegram_id={id}</code></td>
+                    <td>Claim discount</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Adding Videos -->
+        <h2>Adding Videos</h2>
+        <p>Videos are added via the database. SQL example:</p>
+        <pre><code><span class="lang-label">sql</span>INSERT INTO videos (title, description, video_url, thumbnail_url, duration_seconds, reward_stars)
+VALUES (
+    'Video Title',
+    'Video Description',
+    'https://example.com/video.mp4',
+    'https://example.com/thumbnail.jpg',
+    120,
+    1
+);</code></pre>
+
+        <p>Or via Python:</p>
+        <pre><code><span class="lang-label">python</span>from models import Video
+from database import async_session
+
+async def add_video():
+    async with async_session() as session:
+        video = Video(
+            title="New Video",
+            description="Description",
+            video_url="https://example.com/video.mp4",
+            thumbnail_url="https://example.com/thumb.jpg",
+            duration_seconds=120,
+            reward_stars=1
+        )
+        session.add(video)
+        await session.commit()</code></pre>
+
+        <!-- Mini App Setup in BotFather -->
+        <h2>Mini App Setup in BotFather</h2>
+        <ol class="steps-list">
+            <li><span class="step-number">1</span><span>Open @BotFather</span></li>
+            <li><span class="step-number">2</span><span>Select your bot</span></li>
+            <li><span class="step-number">3</span><span><code>/mybots</code> &rarr; select bot &rarr; <code>Bot Settings</code> &rarr; <code>Menu Button</code></span></li>
+            <li><span class="step-number">4</span><span>Set the URL of your Mini App</span></li>
+        </ol>
+
+        <p>Or via the command <code>/setmenubutton</code>:</p>
+        <pre><code>URL: https://your-domain.com
+Button text: Watch Videos</code></pre>
+
+        <!-- Deploy -->
+        <h2>Deploy to Server</h2>
+
+        <h3>Docker (recommended)</h3>
+        <p>Create a <code>docker-compose.yml</code>:</p>
+        <pre><code><span class="lang-label">yaml</span>version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+
+  bot:
+    build: ./bot
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/nginx.conf</code></pre>
+
+        <h3>Manual Deploy</h3>
+        <ol class="steps-list">
+            <li><span class="step-number">1</span><span>Install Python 3.9+</span></li>
+            <li><span class="step-number">2</span><span>Configure nginx as reverse proxy</span></li>
+            <li><span class="step-number">3</span><span>Use systemd for auto-starting services</span></li>
+            <li><span class="step-number">4</span><span>Obtain an SSL certificate (Let's Encrypt)</span></li>
+        </ol>
+
+        <!-- Security -->
+        <h2>Security</h2>
+        <ul class="security-list">
+            <li>All requests are validated via Telegram initData</li>
+            <li>Referral codes are generated cryptographically</li>
+            <li>Rewards are credited only once per action</li>
+            <li>Video progress is tracked on the server</li>
+        </ul>
+
+        <!-- Support -->
+        <h2>Support</h2>
+        <p>For questions, create an Issue in the repository.</p>
+
+        <!-- License -->
+        <h2>License</h2>
+        <p>MIT License</p>
+
+        <footer>
+            <p>Telegram Video Rewards Mini App &mdash; Documentation</p>
+        </footer>
+
+    </div>
+</body>
+</html>
