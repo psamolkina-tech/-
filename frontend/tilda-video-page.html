@@ -1,13 +1,13 @@
 <!--
   ============================================================
   TILDA VIDEO TRACKING PAGE — Полный код для вставки в HTML-блок Tilda
+  Плеер: Rutube (с отслеживанием прогресса через postMessage API)
   ============================================================
   Инструкция:
   1. В редакторе Tilda добавьте блок "T123 — HTML-код" (или Zero Block → Embed HTML)
   2. Скопируйте ВЕСЬ код ниже и вставьте в поле HTML
-  3. Замените VIDEO_URL на ссылку на ваше видео (YouTube или прямой URL)
-  4. Замените данные эксперта (имя, фото, описание)
-  5. Замените CHANNEL_URL на ссылку вашего Telegram канала
+  3. Замените данные эксперта (имя, фото, описание)
+  4. Замените CHANNEL_URL на ссылку вашего Telegram канала
   ============================================================
 -->
 
@@ -158,56 +158,9 @@
   border: none;
 }
 
-/* Custom Play Overlay */
-.vt-play-overlay {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(4px);
-  cursor: pointer;
-  z-index: 5;
-  transition: opacity 0.4s ease;
-}
-
-.vt-play-overlay.vt-hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.vt-play-btn {
-  width: 90px;
-  height: 90px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6c5ce7, #e84393);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 40px rgba(108,92,231,0.5);
-  transition: transform 0.3s, box-shadow 0.3s;
-  margin-bottom: 16px;
-}
-
-.vt-play-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 60px rgba(108,92,231,0.7);
-}
-
-.vt-play-btn svg {
-  width: 36px;
-  height: 36px;
-  margin-left: 4px;
-  fill: #fff;
-}
-
-.vt-play-overlay span {
-  font-size: 16px;
-  color: rgba(255,255,255,0.8);
-  font-weight: 500;
+/* Rutube iframe player fills container */
+#vtRutubePlayer {
+  border-radius: 0;
 }
 
 /* ===== PROGRESS BAR ===== */
@@ -971,34 +924,16 @@
     <section class="vt-video-section">
       <div class="vt-video-wrapper">
         <div class="vt-video-inner">
-          <!--
-            ============================================
-            ВАРИАНТ 1: HTML5 Video (прямой URL на файл)
-            Раскомментируйте и укажите свой URL:
-            ============================================
-          -->
-          <video id="vtVideo" playsinline preload="metadata">
-            <source src="YOUR_VIDEO_URL_HERE.mp4" type="video/mp4">
-            Ваш браузер не поддерживает видео.
-          </video>
-
-          <!--
-            ============================================
-            ВАРИАНТ 2: YouTube (iframe API)
-            Закомментируйте <video> выше и раскомментируйте:
-            ============================================
-          -->
-          <!-- <div id="ytPlayer"></div> -->
-
-          <!-- Play Overlay -->
-          <div class="vt-play-overlay" id="vtPlayOverlay">
-            <div class="vt-play-btn">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            <span>Нажмите, чтобы начать просмотр</span>
-          </div>
+          <!-- Rutube Player -->
+          <iframe
+            id="vtRutubePlayer"
+            src="https://rutube.ru/play/embed/e7c74ec84062d38e78ed2174e3d10eb7/?p=-mm5RNcA7i1ofVpSgAt58Q"
+            frameBorder="0"
+            allow="clipboard-write; autoplay"
+            webkitAllowFullScreen
+            mozallowfullscreen
+            allowFullScreen
+          ></iframe>
         </div>
 
         <!-- Progress Bar -->
@@ -1080,7 +1015,7 @@
           <h3>Посмотреть видео</h3>
           <p>Досмотрите видео до конца для получения награды</p>
           <div class="vt-task-reward-badge">+100 XP</div>
-          <button class="vt-task-btn vt-task-btn-primary" id="vtTaskWatchBtn" onclick="document.getElementById('vtVideo').scrollIntoView({behavior:'smooth'})">
+          <button class="vt-task-btn vt-task-btn-primary" id="vtTaskWatchBtn" onclick="document.getElementById('vtRutubePlayer').scrollIntoView({behavior:'smooth'})">
             Смотреть
           </button>
         </div>
@@ -1153,7 +1088,7 @@
     <section class="vt-footer-cta">
       <h3>Не упустите свой шанс</h3>
       <p>Посмотрите видео, выполните задания и заберите бонусы уже сейчас</p>
-      <button class="vt-bonus-btn vt-active" onclick="document.getElementById('vtVideo').scrollIntoView({behavior:'smooth'})">
+      <button class="vt-bonus-btn vt-active" onclick="document.getElementById('vtRutubePlayer').scrollIntoView({behavior:'smooth'})">
         Начать просмотр
       </button>
     </section>
@@ -1199,9 +1134,7 @@
     // Текст для шаринга
     SHARE_TEXT: 'Посмотри это видео — очень полезный контент! Там ещё можно забрать бонусы.',
     // Ключ localStorage для сохранения прогресса
-    STORAGE_KEY: 'vt_video_progress',
-    // YouTube Video ID (если используете YouTube вариант)
-    YT_VIDEO_ID: ''  // например: 'dQw4w9WgXcQ'
+    STORAGE_KEY: 'vt_video_progress'
   };
 
   // ============================================
@@ -1218,8 +1151,7 @@
   // ============================================
   // DOM ELEMENTS
   // ============================================
-  var video = document.getElementById('vtVideo');
-  var playOverlay = document.getElementById('vtPlayOverlay');
+  var rutubePlayer = document.getElementById('vtRutubePlayer');
   var progressFill = document.getElementById('vtProgressFill');
   var progressPercent = document.getElementById('vtProgressPercent');
   var timeWatched = document.getElementById('vtTimeWatched');
@@ -1262,11 +1194,9 @@
   // APPLY STATE TO UI
   // ============================================
   function applyState() {
-    // Progress
     progressFill.style.width = state.maxProgress + '%';
     progressPercent.textContent = state.maxProgress + '%';
 
-    // Milestones
     var milestones = document.querySelectorAll('.vt-milestone');
     milestones.forEach(function(m) {
       var at = parseInt(m.getAttribute('data-at'), 10);
@@ -1275,7 +1205,6 @@
       }
     });
 
-    // Achievements
     if (state.videoWatched) {
       document.getElementById('vtAch1').classList.add('vt-earned');
       markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
@@ -1289,7 +1218,6 @@
       markTaskDone('vtTaskShare', 'vtShareBtn');
     }
 
-    // Bonus
     if (state.bonusUnlocked) {
       unlockBonus(true);
     }
@@ -1307,91 +1235,123 @@
   }
 
   // ============================================
-  // VIDEO TRACKING
+  // RUTUBE PLAYER TRACKING (postMessage API)
   // ============================================
-  function initVideo() {
-    if (!video) return;
+  function initRutubeTracking() {
+    if (!rutubePlayer) return;
 
-    // Play overlay click
-    if (playOverlay) {
-      playOverlay.addEventListener('click', function() {
-        video.play();
-        playOverlay.classList.add('vt-hidden');
-      });
+    // Listen for messages from Rutube iframe
+    window.addEventListener('message', function(event) {
+      var message;
+      try {
+        message = JSON.parse(event.data);
+      } catch(e) {
+        return; // Ignore non-JSON messages
+      }
+
+      switch (message.type) {
+        // Player ready
+        case 'player:ready':
+          console.log('Rutube player ready');
+          break;
+
+        // Current time update — fires continuously during playback
+        case 'player:currentTime':
+          handleTimeUpdate(message.data.time, message.data.duration);
+          break;
+
+        // Duration changed
+        case 'player:durationChange':
+          if (message.data && message.data.duration) {
+            timeRemaining.textContent = formatTime(message.data.duration);
+          }
+          break;
+
+        // State changes: playing, pause, seeking, buffering, completed
+        case 'player:changeState':
+          if (message.data && message.data.state === 'completed') {
+            handleVideoComplete();
+          }
+          break;
+
+        // Video fully complete (including ads)
+        case 'player:playComplete':
+          handleVideoComplete();
+          break;
+      }
+    });
+  }
+
+  function handleTimeUpdate(currentTime, duration) {
+    if (!duration || duration <= 0) return;
+
+    var percent = Math.floor((currentTime / duration) * 100);
+
+    // Only update if progress increased (prevent rewind cheats)
+    if (percent > state.maxProgress) {
+      state.maxProgress = percent;
+      saveState();
     }
 
-    // When video starts playing, hide overlay
-    video.addEventListener('play', function() {
-      if (playOverlay) playOverlay.classList.add('vt-hidden');
-    });
+    // Update UI
+    progressFill.style.width = state.maxProgress + '%';
+    progressPercent.textContent = state.maxProgress + '%';
 
-    // Pause — show overlay again
-    video.addEventListener('pause', function() {
-      if (!video.ended && playOverlay) {
-        playOverlay.classList.remove('vt-hidden');
+    // Time display
+    timeWatched.textContent = formatTime(currentTime);
+    timeRemaining.textContent = formatTime(duration - currentTime);
+
+    // Milestones
+    var milestones = document.querySelectorAll('.vt-milestone');
+    milestones.forEach(function(m) {
+      var at = parseInt(m.getAttribute('data-at'), 10);
+      if (state.maxProgress >= at) {
+        m.classList.add('vt-reached');
       }
     });
 
-    // Time update — track progress
-    video.addEventListener('timeupdate', function() {
-      if (!video.duration || video.duration === Infinity) return;
-
-      var current = video.currentTime;
-      var duration = video.duration;
-      var percent = Math.floor((current / duration) * 100);
-
-      // Only update if progress increased (prevent rewind cheats)
-      if (percent > state.maxProgress) {
-        state.maxProgress = percent;
-        saveState();
-      }
-
-      // Update UI
-      progressFill.style.width = state.maxProgress + '%';
-      progressPercent.textContent = state.maxProgress + '%';
-
-      // Time display
-      timeWatched.textContent = formatTime(current);
-      timeRemaining.textContent = formatTime(duration - current);
-
-      // Milestones
-      var milestones = document.querySelectorAll('.vt-milestone');
-      milestones.forEach(function(m) {
-        var at = parseInt(m.getAttribute('data-at'), 10);
-        if (state.maxProgress >= at) {
-          m.classList.add('vt-reached');
-        }
-      });
-
-      // Check unlock
-      if (state.maxProgress >= CONFIG.UNLOCK_PERCENT && !state.bonusUnlocked) {
-        state.bonusUnlocked = true;
-        state.videoWatched = true;
-        saveState();
-        unlockBonus(false);
-        document.getElementById('vtAch1').classList.add('vt-earned');
-        markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
-        showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
-      }
-    });
-
-    // Video ended
-    video.addEventListener('ended', function() {
-      state.maxProgress = 100;
-      progressFill.style.width = '100%';
-      progressPercent.textContent = '100%';
-
-      if (!state.bonusUnlocked) {
-        state.bonusUnlocked = true;
-        state.videoWatched = true;
-        saveState();
-        unlockBonus(false);
-        document.getElementById('vtAch1').classList.add('vt-earned');
-        markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
-        showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
-      }
+    // Check unlock
+    if (state.maxProgress >= CONFIG.UNLOCK_PERCENT && !state.bonusUnlocked) {
+      state.bonusUnlocked = true;
+      state.videoWatched = true;
       saveState();
+      unlockBonus(false);
+      document.getElementById('vtAch1').classList.add('vt-earned');
+      markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+      showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
+    }
+  }
+
+  function handleVideoComplete() {
+    state.maxProgress = 100;
+    progressFill.style.width = '100%';
+    progressPercent.textContent = '100%';
+
+    if (!state.bonusUnlocked) {
+      state.bonusUnlocked = true;
+      state.videoWatched = true;
+      saveState();
+      unlockBonus(false);
+      document.getElementById('vtAch1').classList.add('vt-earned');
+      markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
+      showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
+    }
+    saveState();
+
+    // Update milestones
+    var milestones = document.querySelectorAll('.vt-milestone');
+    milestones.forEach(function(m) {
+      m.classList.add('vt-reached');
     });
+  }
+
+  // Send command to Rutube player
+  function sendRutubeCommand(type, data) {
+    if (!rutubePlayer || !rutubePlayer.contentWindow) return;
+    rutubePlayer.contentWindow.postMessage(
+      JSON.stringify({ type: type, data: data || {} }),
+      'https://rutube.ru'
+    );
   }
 
   // ============================================
@@ -1466,10 +1426,8 @@
     if (!btn || state.subscribed) return;
 
     btn.addEventListener('click', function() {
-      // Open channel in new tab
       window.open(CONFIG.CHANNEL_URL, '_blank');
 
-      // After delay, mark as subscribed (in production check via bot API)
       setTimeout(function() {
         state.subscribed = true;
         saveState();
@@ -1492,7 +1450,6 @@
       openShareModal();
     });
 
-    // Close modal
     var closeBtn = document.getElementById('vtCloseShareModal');
     if (closeBtn) {
       closeBtn.addEventListener('click', function() {
@@ -1506,7 +1463,6 @@
       }
     });
 
-    // Copy link
     var copyBtn = document.getElementById('vtCopyShareLink');
     if (copyBtn) {
       copyBtn.addEventListener('click', function() {
@@ -1516,7 +1472,6 @@
       });
     }
 
-    // Share buttons
     var tgBtn = document.getElementById('vtShareTg');
     var waBtn = document.getElementById('vtShareWa');
     var vkBtn = document.getElementById('vtShareVk');
@@ -1573,149 +1528,6 @@
   }
 
   // ============================================
-  // YOUTUBE IFRAME API SUPPORT
-  // ============================================
-  function initYouTube() {
-    if (!CONFIG.YT_VIDEO_ID) return;
-
-    // Hide HTML5 video, show YT player
-    if (video) video.style.display = 'none';
-
-    // Load YouTube API
-    var tag = document.createElement('script');
-    tag.src = 'https://www.youtube.com/iframe_api';
-    var firstScript = document.getElementsByTagName('script')[0];
-    firstScript.parentNode.insertBefore(tag, firstScript);
-
-    window.onYouTubeIframeAPIReady = function() {
-      var ytEl = document.getElementById('ytPlayer');
-      if (!ytEl) {
-        ytEl = document.createElement('div');
-        ytEl.id = 'ytPlayer';
-        video.parentNode.appendChild(ytEl);
-      }
-      ytEl.style.display = 'block';
-
-      window.vtYTPlayer = new YT.Player('ytPlayer', {
-        videoId: CONFIG.YT_VIDEO_ID,
-        playerVars: {
-          autoplay: 0,
-          controls: 1,
-          modestbranding: 1,
-          rel: 0,
-          fs: 1
-        },
-        events: {
-          onReady: function(event) {
-            // Hide play overlay click = play
-            playOverlay.addEventListener('click', function() {
-              event.target.playVideo();
-              playOverlay.classList.add('vt-hidden');
-            });
-          },
-          onStateChange: function(event) {
-            if (event.data === YT.PlayerState.PLAYING) {
-              playOverlay.classList.add('vt-hidden');
-              startYTTracking();
-            } else if (event.data === YT.PlayerState.PAUSED) {
-              playOverlay.classList.remove('vt-hidden');
-              stopYTTracking();
-            } else if (event.data === YT.PlayerState.ENDED) {
-              state.maxProgress = 100;
-              progressFill.style.width = '100%';
-              progressPercent.textContent = '100%';
-              if (!state.bonusUnlocked) {
-                state.bonusUnlocked = true;
-                state.videoWatched = true;
-                saveState();
-                unlockBonus(false);
-                document.getElementById('vtAch1').classList.add('vt-earned');
-                markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
-                showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
-              }
-              stopYTTracking();
-            }
-          }
-        }
-      });
-    };
-  }
-
-  var ytTrackingInterval = null;
-
-  function startYTTracking() {
-    if (ytTrackingInterval) return;
-    ytTrackingInterval = setInterval(function() {
-      if (!window.vtYTPlayer || typeof window.vtYTPlayer.getCurrentTime !== 'function') return;
-      var current = window.vtYTPlayer.getCurrentTime();
-      var duration = window.vtYTPlayer.getDuration();
-      if (!duration) return;
-
-      var percent = Math.floor((current / duration) * 100);
-      if (percent > state.maxProgress) {
-        state.maxProgress = percent;
-        saveState();
-      }
-
-      progressFill.style.width = state.maxProgress + '%';
-      progressPercent.textContent = state.maxProgress + '%';
-      timeWatched.textContent = formatTime(current);
-      timeRemaining.textContent = formatTime(duration - current);
-
-      var milestones = document.querySelectorAll('.vt-milestone');
-      milestones.forEach(function(m) {
-        var at = parseInt(m.getAttribute('data-at'), 10);
-        if (state.maxProgress >= at) {
-          m.classList.add('vt-reached');
-        }
-      });
-
-      if (state.maxProgress >= CONFIG.UNLOCK_PERCENT && !state.bonusUnlocked) {
-        state.bonusUnlocked = true;
-        state.videoWatched = true;
-        saveState();
-        unlockBonus(false);
-        document.getElementById('vtAch1').classList.add('vt-earned');
-        markTaskDone('vtTaskWatch', 'vtTaskWatchBtn');
-        showToast('&#127881; Видео просмотрено! Бонусы разблокированы!');
-      }
-    }, 1000);
-  }
-
-  function stopYTTracking() {
-    if (ytTrackingInterval) {
-      clearInterval(ytTrackingInterval);
-      ytTrackingInterval = null;
-    }
-  }
-
-  // ============================================
-  // ANTI-CHEAT: Prevent skipping via seeked event
-  // ============================================
-  function initAntiCheat() {
-    if (!video) return;
-
-    var lastTime = 0;
-
-    video.addEventListener('timeupdate', function() {
-      // Allow normal playback (small jumps are OK)
-      if (Math.abs(video.currentTime - lastTime) < 3) {
-        lastTime = video.currentTime;
-      }
-    });
-
-    video.addEventListener('seeking', function() {
-      // If trying to skip ahead of max watched position
-      var maxWatchedTime = (state.maxProgress / 100) * video.duration;
-      if (video.currentTime > maxWatchedTime + 5) {
-        video.currentTime = maxWatchedTime;
-        showToast('&#9888;&#65039; Нельзя перематывать вперёд. Смотрите последовательно.');
-      }
-      lastTime = video.currentTime;
-    });
-  }
-
-  // ============================================
   // SMOOTH SCROLL TO VIDEO ON HASH
   // ============================================
   function initSmoothScroll() {
@@ -1732,20 +1544,12 @@
   // ============================================
   function init() {
     loadState();
-
-    if (CONFIG.YT_VIDEO_ID) {
-      initYouTube();
-    } else {
-      initVideo();
-      initAntiCheat();
-    }
-
+    initRutubeTracking();
     initSubscribeTask();
     initShareTask();
     initSmoothScroll();
   }
 
-  // Run when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
